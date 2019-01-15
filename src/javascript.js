@@ -1,3 +1,4 @@
+// export const defaultCode = `{\n\t\"dependencies\": {\n\t\t\n\t}\n}\n`;
 export const defaultCode = ``;
 
 export const options = {
