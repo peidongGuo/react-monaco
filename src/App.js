@@ -2,7 +2,13 @@ import React, { Component } from "react";
 import MonacoEditor from "react-monaco-editor";
 // import { languageDef, configuration, options, defaultCode } from "./sql";
 // import { defaultCode, options, languageDef } from "./javascript";
-import { defaultCode, options, configuration, languageDef } from "./yaml";
+import {
+  defaultCode,
+  options,
+  configuration,
+  languageDef,
+  getCompletionItems
+} from "./yaml";
 import "./App.css";
 
 class App extends Component {
@@ -52,40 +58,14 @@ class App extends Component {
       // Register a new language
       monaco.languages.register({ id: "yamlGlodon" });
       // Register a tokens provider for the language
-      // monaco.languages.setMonarchTokensProvider("yamlGlodon", languageDef);
+      monaco.languages.setMonarchTokensProvider("yamlGlodon", languageDef);
       // Set the editing configuration for the language
       monaco.languages.setLanguageConfiguration("yamlGlodon", configuration);
 
       monaco.languages.registerCompletionItemProvider("yamlGlodon", {
         provideCompletionItems: () => {
-          var suggestions = [
-            {
-              label: "simpleText",
-              kind: monaco.languages.CompletionItemKind.Text,
-              insertText: "simpleText"
-            },
-            {
-              label: "testing",
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: "testing(${1:condition})",
-              insertTextRules:
-                monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-            },
-            {
-              label: "ifelse",
-              kind: monaco.languages.CompletionItemKind.Snippet,
-              insertText: [
-                "if (${1:condition}) {",
-                "\t$0",
-                "} else {",
-                "\t",
-                "}"
-              ].join("\n"),
-              insertTextRules:
-                monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-              documentation: "If-Else Statement"
-            }
-          ];
+          // console.log(getCompletionItems(monaco));
+          var suggestions = getCompletionItems(monaco);
           return { suggestions: suggestions };
         }
       });

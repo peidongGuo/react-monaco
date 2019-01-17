@@ -1,3 +1,167 @@
+function createDependencyProposals(monaco) {
+  // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor),
+  // here you could do a server side lookup
+  return [
+    {
+      label: '"lodash"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: "The Lodash library exported as Node.js modules.",
+      insertText: 'lodash: "*"'
+    },
+    {
+      label: '"express"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: "Fast, unopinionated, minimalist web framework",
+      insertText: '"express": "*"'
+    },
+    {
+      label: '"mkdirp"',
+      kind: monaco.languages.CompletionItemKind.Function,
+      documentation: "Recursively mkdir, like <code>mkdir -p</code>",
+      insertText: '"mkdirp": "*"'
+    }
+  ];
+}
+
+export const getCompletionItems = monaco => [
+  {
+    label: "title",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "title: "
+  },
+  {
+    label: "description",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "description: "
+  },
+  {
+    label: "type",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "type: "
+  },
+  {
+    label: "required",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "required: \n\t- "
+  },
+  {
+    label: "properties",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "properties: \n\t"
+  },
+  {
+    label: "minProperties",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "minProperties: "
+  },
+  {
+    label: "maxProperties",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "maxProperties: "
+  },
+  {
+    label: "additionalProperties",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "additionalProperties: "
+  },
+
+  //array
+  {
+    label: "minItems",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "minItems: "
+  },
+  {
+    label: "maxItems",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "maxItems: "
+  },
+  {
+    label: "uniqueItems",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "uniqueItems: "
+  },
+
+  //number
+  {
+    label: "multipleOf",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "multipleOf: "
+  },
+  {
+    label: "minmum",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "minmum: "
+  },
+  {
+    label: "maximum",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "maximum: "
+  },
+  {
+    label: "exclusiveMinimum",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "exclusiveMinimum: "
+  },
+  {
+    label: "exclusiveMaximum",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "exclusiveMaximum: "
+  },
+
+  //string
+  {
+    label: "minLength",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "minLength: "
+  },
+  {
+    label: "maxLength",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "maxLength: "
+  },
+
+  {
+    label: "uniqueItems",
+    kind: monaco.languages.CompletionItemKind.Text,
+    insertText: "uniqueItems: "
+  },
+
+  {
+    label: "type: object",
+    kind: monaco.languages.CompletionItemKind.Keyword,
+    insertText: ["type: object", "properties: \n\t", "required: \n\t- "].join(
+      "\n"
+    ),
+    insertTextRules:
+      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+  },
+  {
+    label: "type: array",
+    kind: monaco.languages.CompletionItemKind.Keyword,
+    insertText: ["type: array", "items: \n\t", "minItem: 1"].join("\n"),
+    insertTextRules:
+      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+  },
+  {
+    label: "testing",
+    kind: monaco.languages.CompletionItemKind.Keyword,
+    insertText: "testing(${1:condition})",
+    insertTextRules:
+      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+  },
+  {
+    label: "ifelse",
+    kind: monaco.languages.CompletionItemKind.Snippet,
+    insertText: ["if (${1:condition}) {", "\t$0", "} else {", "\t", "}"].join(
+      "\n"
+    ),
+    insertTextRules:
+      monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+    documentation: "If-Else Statement"
+  }
+];
+
 // export const defaultCode = `{\n\t\"dependencies\": {\n\t\t\n\t}\n}\n`;
 export const defaultCode = ``;
 
@@ -34,6 +198,7 @@ export const languageDef = {
   // Set defaultToken to invalid to see what you do not tokenize yet
   defaultToken: "invalid",
   tokenPostfix: ".yaml",
+  ignoreCase: true,
 
   brackets: [
     { token: "delimiter.bracket", open: "{", close: "}" },
@@ -98,56 +263,50 @@ export const languageDef = {
         ["type", "white", "operators", "white"]
       ],
 
-      { include: "@flowScalars" },
+      { include: "@flowScalars" }
 
       // String nodes
-      [
-        /.+$/,
-        {
-          cases: {
-            "@keywords": "keyword",
-            "@default": "string"
-          }
-        }
-      ]
+      // [
+      //   // /.+$/,
+      //   /[\w@#$]+/,
+      //   {
+      //     cases: {
+      //       "@keywords": "keyword",
+      //       "@default": "string"
+      //     }
+      //   }
+      // ]
     ],
 
     // Flow Collection: Flow Mapping
     object: [
-      { include: "@whitespace" },
-      { include: "@comment" },
-
-      // Flow Mapping termination
-      [/\}/, "@brackets", "@pop"],
-
-      // Flow Mapping delimiter
-      [/,/, "delimiter.comma"],
-
-      // Flow Mapping Key:Value delimiter
-      [/:(?= )/, "operators"],
-
-      // Flow Mapping Key:Value key
-      [/(?:".*?"|'.*?'|[^,\{\[]+?)(?=: )/, "type"],
-
-      // Start Flow Style
-      { include: "@flowCollections" },
-      { include: "@flowScalars" },
-
-      // Scalar Data types
-      { include: "@tagHandle" },
-      { include: "@anchor" },
-      { include: "@flowNumber" },
-
-      // Other value (keyword or string)
-      [
-        /[^\},]+/,
-        {
-          cases: {
-            "@keywords": "keyword",
-            "@default": "string"
-          }
-        }
-      ]
+      // { include: "@whitespace" },
+      // { include: "@comment" },
+      // // Flow Mapping termination
+      // [/\}/, "@brackets", "@pop"],
+      // // Flow Mapping delimiter
+      // [/,/, "delimiter.comma"],
+      // // Flow Mapping Key:Value delimiter
+      // [/:(?= )/, "operators"],
+      // // Flow Mapping Key:Value key
+      // [/(?:".*?"|'.*?'|[^,\{\[]+?)(?=: )/, "type"],
+      // // Start Flow Style
+      // { include: "@flowCollections" },
+      // { include: "@flowScalars" },
+      // // Scalar Data types
+      // { include: "@tagHandle" },
+      // { include: "@anchor" },
+      // { include: "@flowNumber" },
+      // // Other value (keyword or string)
+      // [
+      //   /[^\},]+/,
+      //   {
+      //     cases: {
+      //       "@keywords": "keyword",
+      //       "@default": "string"
+      //     }
+      //   }
+      // ]
     ],
 
     // Flow Collection: Flow Sequence
